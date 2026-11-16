@@ -1,982 +1,218 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>STM Science Bowl Practice</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Permanent+Marker&family=Special+Elite&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pinhole</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --board:#F3ECD6;
-    --board-shadow:#CBBF9C;
-    --ink:#241F14;
-    --ink-soft:#5B5646;
-    --pencil:#4E5A52;
-    --red:#B23A2E;
-    --green:#3E6B4A;
-    --blue:#2C5578;
-    --gold:#B9862C;
-    --bio:#B9E4A4;
-    --chem:#F7C08A;
-    --phys:#A9CDEF;
-    --earth:#A9E0D6;
-    --energy:#F6D06B;
-    --math:#F0AFC7;
-  }
-  *{box-sizing:border-box;}
-  html,body{height:100%;}
-  body{
-    margin:0;
-    background:
-      radial-gradient(ellipse at 20% 0%, rgba(255,255,255,0.05), transparent 45%),
-      radial-gradient(ellipse at 85% 90%, rgba(255,255,255,0.04), transparent 45%),
-      #3A4A3C;
-    color:var(--ink);
-    font-family:'Space Grotesk', sans-serif;
-    display:flex;
-    justify-content:center;
-    padding:34px 14px 60px;
-    min-height:100vh;
-  }
-  .console{
-    width:100%;
-    max-width:560px;
-    position:relative;
-    padding-top:20px;
-  }
-  .console.device-phone{max-width:380px;}
-  .console.device-tablet{max-width:540px;}
-  .console.device-desktop{max-width:760px;}
-
-  .clip{
-    position:absolute;
-    top:0; left:50%;
-    transform:translateX(-50%);
-    width:118px; height:32px;
-    background:linear-gradient(180deg,#EFEDE7,#B9B4AC 55%,#8E897F);
-    border-radius:5px;
-    box-shadow:0 3px 5px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.65);
-    z-index:5;
-  }
-  .clip::before{
-    content:'';
-    position:absolute; left:10px; right:10px; top:50%; height:2px;
-    background:rgba(0,0,0,0.18);
-  }
-  .clip::after{
-    content:'';
-    position:absolute; width:6px;height:6px;border-radius:50%;
-    background:#6C675F; left:16px; top:5px;
-    box-shadow:86px 0 0 #6C675F;
-  }
-
-  .paper-sheet{
-    background:var(--board);
-    border-radius:3px;
-    padding:34px 24px 24px;
-    padding-left:44px;
-    position:relative;
-    transform:rotate(-0.35deg);
-    box-shadow:0 14px 26px rgba(0,0,0,0.35), 0 2px 0 rgba(255,255,255,0.4) inset;
-  }
-  .paper-sheet::before{
-    content:'';
-    position:absolute; inset:0;
-    background-image:repeating-linear-gradient(var(--board) 0 29px, var(--board-shadow) 29px 30px);
-    opacity:0.55;
-    border-radius:3px;
-    pointer-events:none;
-  }
-  .paper-sheet::after{
-    content:'';
-    position:absolute; left:34px; top:0; bottom:0; width:1px;
-    background:rgba(178,58,46,0.4);
-  }
-  .paper-sheet > *{ position:relative; z-index:1; }
-
-  .team-tag{
-    position:absolute; top:10px; right:14px;
-    font-family:'Special Elite', monospace;
-    font-size:10px;
-    letter-spacing:0.04em;
-    color:var(--ink-soft);
-    border:1px solid var(--ink-soft);
-    padding:2px 8px;
-    border-radius:2px;
-    transform:rotate(2deg);
-    background:rgba(255,255,255,0.5);
-    z-index:2;
-  }
-
-  .eyebrow{
-    font-family:'Special Elite', monospace;
-    font-size:11px;
-    letter-spacing:0.1em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin:0 0 4px 0;
-  }
-  .title-hand{
-    font-family:'Kalam', cursive;
-    font-weight:700;
-    font-size:40px;
-    line-height:0.95;
-    margin:0 0 4px 0;
-    color:var(--ink);
-  }
-  .console.device-phone .title-hand{font-size:30px;}
-  .console.device-desktop .title-hand{font-size:52px;}
-
-  .header{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    margin-bottom:12px;
-    padding-bottom:12px;
-    border-bottom:2px solid var(--ink);
-  }
-  .score-stamp{
-    width:58px;height:58px;
-    border-radius:50%;
-    border:3px solid var(--red);
-    color:var(--red);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    font-family:'Special Elite', monospace;
-    transform:rotate(-7deg);
-    flex-shrink:0;
-  }
-  .score-stamp .num{font-size:18px; font-weight:700; line-height:1;}
-  .score-stamp .lbl{font-size:6px; letter-spacing:0.08em; text-transform:uppercase; margin-top:2px;}
-
-  .meta-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:12px;
-    font-family:'Special Elite', monospace;
-    font-size:11px;
-    color:var(--ink-soft);
-    gap:8px;
-    flex-wrap:wrap;
-  }
-  .highlight-tag{
-    display:inline-block;
-    padding:4px 10px;
-    font-family:'Kalam', cursive;
-    font-weight:700;
-    font-size:12px;
-    color:var(--ink);
-    clip-path:polygon(1% 6%, 98% 0%, 100% 92%, 3% 100%);
-    transform:rotate(-1.2deg);
-  }
-  .diff-tag{
-    font-family:'Special Elite', monospace;
-    font-size:10px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    border:1px solid var(--ink-soft);
-    padding:3px 8px;
-    border-radius:2px;
-  }
-  .streak-tag{
-    color:var(--green);
-    font-family:'Special Elite', monospace;
-    letter-spacing:0.04em;
-  }
-
-  .timer-shell{
-    display:flex;
-    align-items:center;
-    gap:9px;
-    margin-bottom:18px;
-    font-family:'Special Elite', monospace;
-    font-size:12px;
-    color:var(--ink-soft);
-  }
-  .timer-track{
-    flex:1;
-    height:9px;
-    background:rgba(0,0,0,0.06);
-    border:1px solid var(--ink-soft);
-    border-radius:2px;
-    overflow:hidden;
-  }
-  .timer-fill{
-    height:100%;
-    background:var(--blue);
-    width:100%;
-    transition:width 0.1s linear, background 0.3s;
-  }
-  .timer-fill.low{ background:var(--red); }
-
-  .progress-dots{
-    display:flex;
-    gap:5px;
-    margin-bottom:14px;
-    flex-wrap:wrap;
-  }
-  .dot-lamp{
-    width:15px;height:15px;
-    border:1.5px solid var(--ink-soft);
-    border-radius:3px;
-    display:inline-flex; align-items:center; justify-content:center;
-    font-family:'Special Elite', monospace;
-    font-size:9px;
-    color:transparent;
-    background:transparent;
-  }
-  .dot-lamp.answered-correct{border-color:var(--green); color:var(--green); background:rgba(62,107,74,0.12);}
-  .dot-lamp.answered-wrong{border-color:var(--red); color:var(--red); background:rgba(178,58,46,0.12);}
-  .dot-lamp.current{border-color:var(--ink); background:var(--energy);}
-
-  .question-box{
-    border:2px dashed var(--ink);
-    border-radius:3px;
-    padding:20px 18px;
-    min-height:70px;
-    display:flex;
-    align-items:center;
-    margin-bottom:18px;
-    transform:rotate(0.3deg);
-    background:rgba(255,255,255,0.28);
-    animation:card-in 0.25s ease;
-  }
-  @keyframes card-in{
-    from{opacity:0; transform:translateY(5px) rotate(0.3deg);}
-    to{opacity:1; transform:translateY(0) rotate(0.3deg);}
-  }
-  .question-text{
-    font-size:16px;
-    line-height:1.5;
-    margin:0;
-    font-weight:500;
-  }
-
-  .choices{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-bottom:18px;
-  }
-  .console.device-phone .choices{grid-template-columns:1fr;}
-  @media (max-width:420px){
-    .console:not(.device-desktop):not(.device-tablet) .choices{grid-template-columns:1fr;}
-  }
-  .choice-btn{
-    background:#FBF7E9;
-    border:2px solid var(--ink);
-    color:var(--ink);
-    padding:12px 13px;
-    border-radius:3px;
-    font-family:'Space Grotesk', sans-serif;
-    font-size:14px;
-    text-align:left;
-    cursor:pointer;
-    transition:transform 0.08s, background 0.15s;
-    display:flex;
-    align-items:center;
-    gap:9px;
-    box-shadow:2px 2px 0 rgba(0,0,0,0.14);
-    transform:rotate(var(--tilt, 0deg));
-  }
-  .choice-btn:hover:not(:disabled){
-    background:#FFFDF3;
-  }
-  .choice-btn:active:not(:disabled){
-    transform:scale(0.98) rotate(var(--tilt, 0deg));
-  }
-  .choice-btn:disabled{cursor:default;}
-  .choice-letter{
-    font-family:'Special Elite', monospace;
-    font-weight:700;
-    font-size:11px;
-    width:20px;height:20px;
-    border:1.5px solid var(--ink);
-    border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    flex-shrink:0;
-  }
-  .choice-btn.correct{
-    border-color:var(--green);
-    background:rgba(62,107,74,0.15);
-  }
-  .choice-btn.correct .choice-letter{border-color:var(--green); color:var(--green);}
-  .choice-btn.wrong{
-    border-color:var(--red);
-    background:rgba(178,58,46,0.15);
-    animation:shake 0.3s;
-  }
-  .choice-btn.wrong .choice-letter{border-color:var(--red); color:var(--red);}
-  @keyframes shake{
-    0%,100%{transform:translateX(0) rotate(var(--tilt,0deg));}
-    25%{transform:translateX(-3px) rotate(var(--tilt,0deg));}
-    75%{transform:translateX(3px) rotate(var(--tilt,0deg));}
-  }
-  .choice-btn.faded{opacity:0.4;}
-
-  .feedback-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    min-height:22px;
-    margin-bottom:16px;
-    font-family:'Special Elite', monospace;
-    font-size:12px;
-  }
-  .feedback-msg{font-weight:700;}
-  .feedback-msg.correct{color:var(--green); text-decoration:underline wavy var(--green);}
-  .feedback-msg.wrong{color:var(--red); text-decoration:underline wavy var(--red);}
-  .feedback-msg.timeout{color:var(--ink-soft);}
-
-  .push-btn{
-    width:100%;
-    background:var(--ink);
-    color:var(--board);
-    border:none;
-    border-bottom:4px solid #100E08;
-    padding:13px;
-    border-radius:4px;
-    font-family:'Space Grotesk', sans-serif;
-    font-size:14px;
-    font-weight:700;
-    letter-spacing:0.02em;
-    cursor:pointer;
-    transition:transform 0.06s, border-bottom-width 0.06s;
-  }
-  .push-btn:hover{filter:brightness(1.15);}
-  .push-btn:active{transform:translateY(3px); border-bottom-width:1px;}
-
-  .center{text-align:center;}
-  .lede{
-    color:var(--ink-soft);
-    font-size:14px;
-    line-height:1.6;
-    max-width:420px;
-    margin:0 auto 20px auto;
-  }
-
-  .device-pick{
-    display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
-    margin:22px 0 6px;
-  }
-  .device-card{
-    width:126px;
-    padding:16px 8px 12px;
-    text-align:center;
-    cursor:pointer;
-    border:2px solid var(--ink);
-    border-radius:4px;
-    font-family:'Kalam', cursive;
-    font-weight:700;
-    font-size:13px;
-    transition:transform 0.12s;
-    box-shadow:2px 3px 0 rgba(0,0,0,0.15);
-  }
-  .device-card:hover{transform:translateY(-3px);}
-  .device-card svg{display:block; margin:0 auto 8px auto;}
-
-  .diff-select{
-    display:flex;
-    gap:10px;
-    justify-content:center;
-    margin-bottom:22px;
-    flex-wrap:wrap;
-  }
-  .sticky{
-    padding:13px 14px;
-    border:2px solid var(--ink);
-    border-radius:2px;
-    cursor:pointer;
-    width:148px;
-    text-align:left;
-    box-shadow:2px 3px 0 rgba(0,0,0,0.15);
-    transition:transform 0.1s;
-    background:#FBF7E9;
-  }
-  .sticky:hover{transform:translateY(-2px);}
-  .sticky.selected{background:var(--energy);}
-  .sticky-name{
-    font-family:'Special Elite', monospace;
-    font-weight:700;
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:0.03em;
-    margin-bottom:4px;
-  }
-  .sticky-desc{
-    font-size:11px;
-    color:var(--ink-soft);
-    line-height:1.4;
-  }
-
-  .cat-legend{
-    display:flex;
-    flex-wrap:wrap;
-    gap:7px;
-    justify-content:center;
-    margin-bottom:26px;
-  }
-  .legend-chip{
-    font-family:'Kalam', cursive;
-    font-weight:700;
-    font-size:12px;
-    padding:4px 10px;
-    clip-path:polygon(1% 8%, 98% 0%, 100% 90%, 2% 100%);
-  }
-
-  .buzz-btn{
-    width:112px; height:112px;
-    border-radius:50%;
-    border:none;
-    margin:8px auto 22px auto;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    background:radial-gradient(circle at 36% 28%, #E15C4C, var(--red) 55%, #7A251B 100%);
-    box-shadow:0 7px 0 #5C1B14, 0 12px 18px rgba(0,0,0,0.4);
-    font-family:'Kalam', cursive;
-    font-weight:700;
-    font-size:16px;
-    color:#FBF2EA;
-    transition:transform 0.08s, box-shadow 0.08s;
-  }
-  .console.device-phone .buzz-btn{width:92px; height:92px; font-size:13px;}
-  .console.device-desktop .buzz-btn{width:128px; height:128px; font-size:18px;}
-  .buzz-btn:hover{filter:brightness(1.06);}
-  .buzz-btn:active{
-    transform:translateY(5px);
-    box-shadow:0 2px 0 #5C1B14, 0 5px 10px rgba(0,0,0,0.4);
-  }
-
-  .link-btn{
-    background:none; border:none; cursor:pointer;
-    font-family:'Special Elite', monospace;
-    font-size:11px;
-    color:var(--ink-soft);
-    text-decoration:underline;
-    padding:4px;
-    margin-bottom:14px;
-  }
-
-  .end-stats{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:9px;
-    max-width:400px;
-    margin:0 auto 24px auto;
-  }
-  .tile{
-    border:2px solid var(--ink);
-    border-radius:3px;
-    padding:12px 6px;
-    background:#FBF7E9;
-    box-shadow:2px 2px 0 rgba(0,0,0,0.12);
-  }
-  .tile .stat-num{
-    font-family:'Special Elite', monospace;
-    font-size:19px;
-    font-weight:700;
-    color:var(--ink);
-  }
-  .tile .stat-label{
-    font-size:9px;
-    color:var(--ink-soft);
-    text-transform:uppercase;
-    letter-spacing:0.08em;
-    margin-top:3px;
-  }
-
-  .breakdown{
-    max-width:400px;
-    margin:0 auto 24px auto;
-    text-align:left;
-    border:2px solid var(--ink);
-    border-radius:3px;
-    padding:4px 14px;
-    background:rgba(255,255,255,0.3);
-  }
-  .breakdown-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:8px 0;
-    border-bottom:1px dashed var(--ink-soft);
-    font-family:'Special Elite', monospace;
-    font-size:11px;
-  }
-  .breakdown-row:last-child{border-bottom:none;}
-  .breakdown-cat{display:flex; align-items:center; gap:7px;}
-  .breakdown-cat .swatch{width:9px;height:9px;border-radius:2px; border:1px solid var(--ink);}
-
-  .signature-stamp{
-    display:inline-block;
-    font-family:'Permanent Marker', cursive;
-    font-size:15px;
-    color:var(--red);
-    transform:rotate(-3deg);
-    border:2px dashed var(--red);
-    border-radius:9px;
-    padding:6px 15px;
-    margin-top:4px;
-    opacity:0.85;
-  }
-  .fine-print{
-    font-size:10px;
-    color:var(--ink-soft);
-    letter-spacing:0.03em;
-    margin-top:10px;
-    font-family:'Special Elite', monospace;
-  }
-</style>
-</head>
-<body>
-<div class="console" id="app"></div>
-
-<script>
-const CATEGORIES = {
-  Biology: 'bio', Chemistry: 'chem', Physics: 'phys',
-  'Earth & Space': 'earth', Energy: 'energy', Math: 'math'
-};
-
-const DIFFICULTIES = {
-  easy: {label:'Regional', desc:'Core facts and definitions — the level teams see at a regional meet.', time:14000},
-  medium: {label:'Invitational', desc:'Multi-step recall and applied concepts, invitational pace.', time:10000},
-  hard: {label:'Championship', desc:'Calculation-heavy, national-championship difficulty.', time:8000}
-};
-
-const QUESTIONS = [
-  {cat:'Biology', diff:'easy', q:'Which organelle is primarily responsible for producing ATP through aerobic respiration?', choices:['Golgi apparatus','Mitochondrion','Ribosome','Lysosome'], answer:1},
-  {cat:'Biology', diff:'easy', q:'What is the term for a change in the nucleotide sequence of DNA?', choices:['Mutation','Translation','Transcription','Replication'], answer:0},
-  {cat:'Biology', diff:'easy', q:'Which blood type is known as the universal donor?', choices:['AB positive','O negative','A positive','B negative'], answer:1},
-  {cat:'Biology', diff:'easy', q:'What process do plants use to convert light energy into chemical energy?', choices:['Respiration','Fermentation','Photosynthesis','Transpiration'], answer:2},
-  {cat:'Biology', diff:'easy', q:'Which kingdom includes organisms like mushrooms and yeasts?', choices:['Plantae','Fungi','Protista','Monera'], answer:1},
-  {cat:'Biology', diff:'medium', q:'What is the functional unit of the kidney called?', choices:['Neuron','Nephron','Alveolus','Villus'], answer:1},
-  {cat:'Biology', diff:'medium', q:'DNA replication is described as semi-conservative because each new molecule contains what?', choices:['Two new strands','One old strand and one new strand','Two old strands','RNA and DNA strands'], answer:1},
-  {cat:'Biology', diff:'medium', q:'Which macromolecule is primarily responsible for long-term energy storage in animals?', choices:['Protein','Nucleic acid','Carbohydrate','Fat'], answer:3},
-  {cat:'Biology', diff:'medium', q:'What term describes two species evolving in response to each other over time?', choices:['Convergent evolution','Coevolution','Divergent evolution','Adaptive radiation'], answer:1},
-  {cat:'Biology', diff:'medium', q:'Which phase of mitosis involves chromosomes lining up at the cell equator?', choices:['Prophase','Anaphase','Metaphase','Telophase'], answer:2},
-  {cat:'Biology', diff:'hard', q:'During the light-independent reactions of photosynthesis, which enzyme catalyzes the initial fixation of carbon dioxide onto ribulose-1,5-bisphosphate?', choices:['ATP synthase','RuBisCO','DNA polymerase','Hexokinase'], answer:1},
-  {cat:'Biology', diff:'hard', q:'In the electron transport chain, which complex is directly responsible for pumping protons while reducing ubiquinone using electrons from FADH2?', choices:['Complex I','Complex II','Complex III','Complex IV'], answer:1},
-  {cat:'Biology', diff:'hard', q:'A cross between two heterozygous individuals for a gene showing incomplete dominance produces what phenotypic ratio in the offspring?', choices:['3:1','9:3:3:1','1:2:1','1:1:1:1'], answer:2},
-  {cat:'Biology', diff:'hard', q:'Which type of RNA polymerase in eukaryotes is responsible for synthesizing messenger RNA?', choices:['RNA polymerase I','RNA polymerase II','RNA polymerase III','Primase'], answer:1},
-  {cat:'Biology', diff:'hard', q:'The Hardy-Weinberg equation p squared plus 2pq plus q squared equals 1 assumes all of the following except which?', choices:['No mutation','Random mating','Infinite population size','Directional selection'], answer:3},
-  {cat:'Biology', diff:'hard', q:'In competitive enzyme inhibition, which kinetic parameter changes while the other remains constant relative to the uninhibited reaction?', choices:['Vmax increases, Km unchanged','Km increases, Vmax unchanged','Both Vmax and Km decrease','Vmax decreases, Km unchanged'], answer:1},
-
-  {cat:'Chemistry', diff:'easy', q:'What is the pH of a neutral solution at 25 degrees Celsius?', choices:['0','7','10','14'], answer:1},
-  {cat:'Chemistry', diff:'easy', q:'Which subatomic particle has no electric charge?', choices:['Proton','Electron','Neutron','Positron'], answer:2},
-  {cat:'Chemistry', diff:'easy', q:'What type of bond involves the sharing of electron pairs between atoms?', choices:['Ionic bond','Covalent bond','Metallic bond','Hydrogen bond'], answer:1},
-  {cat:'Chemistry', diff:'easy', q:'What is the chemical symbol for gold?', choices:['Ag','Au','Gd','Go'], answer:1},
-  {cat:'Chemistry', diff:'easy', q:'Avogadro\'s number represents the number of particles in what unit?', choices:['A gram','A liter','A mole','A molecule'], answer:2},
-  {cat:'Chemistry', diff:'medium', q:'Which gas law states that pressure and volume are inversely related at constant temperature?', choices:['Charles\'s Law','Boyle\'s Law','Gay-Lussac\'s Law','Avogadro\'s Law'], answer:1},
-  {cat:'Chemistry', diff:'medium', q:'What is the name for a substance that speeds up a reaction without being consumed?', choices:['Reactant','Catalyst','Product','Inhibitor'], answer:1},
-  {cat:'Chemistry', diff:'medium', q:'In the periodic table, elements in the same column share what property?', choices:['Same atomic mass','Same number of valence electrons','Same number of neutrons','Same physical state'], answer:1},
-  {cat:'Chemistry', diff:'medium', q:'What is the term for the smallest unit of an element that retains its chemical properties?', choices:['Molecule','Compound','Atom','Isotope'], answer:2},
-  {cat:'Chemistry', diff:'medium', q:'Which type of reaction releases energy to the surroundings?', choices:['Endothermic','Exothermic','Isothermic','Adiabatic'], answer:1},
-  {cat:'Chemistry', diff:'hard', q:'For a reaction with rate law rate = k[A]^2[B], if the concentration of A is doubled and B is tripled, by what factor does the rate increase?', choices:['6','8','12','24'], answer:2},
-  {cat:'Chemistry', diff:'hard', q:'According to VSEPR theory, what is the molecular geometry of a molecule with 5 bonding pairs and 1 lone pair on the central atom?', choices:['Trigonal bipyramidal','Square pyramidal','Octahedral','Seesaw'], answer:1},
-  {cat:'Chemistry', diff:'hard', q:'For the reaction N2 + 3H2 to 2NH3, if 2 moles of N2 react completely with excess H2, how many moles of NH3 are produced?', choices:['2','3','4','6'], answer:2},
-  {cat:'Chemistry', diff:'hard', q:'A buffer solution is prepared using acetic acid, with a Ka of 1.8 times 10 to the negative 5, and sodium acetate in equal concentrations. What is the approximate pH of this buffer?', choices:['3.7','4.7','5.7','7.0'], answer:1},
-  {cat:'Chemistry', diff:'hard', q:'In a galvanic cell, oxidation occurs at which electrode, and electrons flow in which direction through the external circuit?', choices:['Cathode; toward the anode','Anode; toward the cathode','Cathode; toward the cathode','Anode; toward the anode'], answer:1},
-
-  {cat:'Physics', diff:'easy', q:'What is the SI unit of force?', choices:['Joule','Watt','Newton','Pascal'], answer:2},
-  {cat:'Physics', diff:'easy', q:'According to Newton\'s third law, forces always occur in pairs that are equal and what?', choices:['In the same direction','Opposite in direction','Perpendicular','Random'], answer:1},
-  {cat:'Physics', diff:'easy', q:'What quantity is measured in hertz?', choices:['Wavelength','Amplitude','Frequency','Period'], answer:2},
-  {cat:'Physics', diff:'easy', q:'What is the term for the bending of light as it passes between two media of different density?', choices:['Reflection','Diffraction','Refraction','Polarization'], answer:2},
-  {cat:'Physics', diff:'easy', q:'What is the unit of electrical resistance?', choices:['Volt','Ampere','Ohm','Watt'], answer:2},
-  {cat:'Physics', diff:'medium', q:'Which law states that energy cannot be created or destroyed, only transformed?', choices:['Newton\'s first law','Law of conservation of energy','Ohm\'s law','Law of universal gravitation'], answer:1},
-  {cat:'Physics', diff:'medium', q:'A wave with high frequency has what kind of wavelength, assuming constant speed?', choices:['Longer wavelength','Shorter wavelength','No wavelength','Undefined wavelength'], answer:1},
-  {cat:'Physics', diff:'medium', q:'What term describes the resistance of an object to a change in its motion?', choices:['Momentum','Inertia','Velocity','Acceleration'], answer:1},
-  {cat:'Physics', diff:'medium', q:'Which type of electromagnetic radiation has the shortest wavelength?', choices:['Radio waves','Infrared','Gamma rays','Microwaves'], answer:2},
-  {cat:'Physics', diff:'medium', q:'What is the acceleration due to gravity near Earth\'s surface, approximately?', choices:['5 m/s squared','8.9 m/s squared','9.8 m/s squared','12 m/s squared'], answer:2},
-  {cat:'Physics', diff:'hard', q:'A block slides down a frictionless incline of angle theta. What expression gives its acceleration along the incline?', choices:['g','g sin theta','g cos theta','g tan theta'], answer:1},
-  {cat:'Physics', diff:'hard', q:'In simple harmonic motion, at the point of maximum displacement from equilibrium, what can be said about the velocity and acceleration?', choices:['Both are zero','Velocity is zero, acceleration is maximum','Velocity is maximum, acceleration is zero','Both are maximum'], answer:1},
-  {cat:'Physics', diff:'hard', q:'For an object undergoing uniform circular motion, the net force is directed how relative to the velocity vector?', choices:['Parallel to velocity','Antiparallel to velocity','Perpendicular to velocity, toward the center','Perpendicular to velocity, away from the center'], answer:2},
-  {cat:'Physics', diff:'hard', q:'According to the Bohr model, the energy of an electron in the nth orbital of a hydrogen atom is proportional to what?', choices:['n','n squared','1 over n','1 over n squared'], answer:3},
-  {cat:'Physics', diff:'hard', q:'In special relativity, as an object\'s velocity approaches the speed of light, what happens to its relativistic momentum?', choices:['It approaches zero','It approaches a constant finite value','It approaches infinity','It remains equal to classical momentum'], answer:2},
-
-  {cat:'Earth & Space', diff:'easy', q:'What is the outermost layer of the Earth called?', choices:['Mantle','Core','Crust','Lithosphere'], answer:2},
-  {cat:'Earth & Space', diff:'easy', q:'Which planet in our solar system has the most extensive ring system visible from Earth?', choices:['Jupiter','Uranus','Neptune','Saturn'], answer:3},
-  {cat:'Earth & Space', diff:'easy', q:'What type of rock forms from cooled magma or lava?', choices:['Sedimentary','Metamorphic','Igneous','Fossiliferous'], answer:2},
-  {cat:'Earth & Space', diff:'easy', q:'Which layer of the atmosphere contains the ozone layer?', choices:['Troposphere','Stratosphere','Mesosphere','Thermosphere'], answer:1},
-  {cat:'Earth & Space', diff:'easy', q:'What is the closest star to Earth, other than the Sun?', choices:['Alpha Centauri A','Proxima Centauri','Sirius','Betelgeuse'], answer:1},
-  {cat:'Earth & Space', diff:'medium', q:'What is the name for the boundary between two tectonic plates that are moving apart?', choices:['Convergent boundary','Divergent boundary','Transform boundary','Subduction zone'], answer:1},
-  {cat:'Earth & Space', diff:'medium', q:'What phenomenon describes the moon appearing completely within Earth\'s shadow?', choices:['Solar eclipse','Lunar eclipse','Equinox','Solstice'], answer:1},
-  {cat:'Earth & Space', diff:'medium', q:'Which scale is used to measure the magnitude of earthquakes based on seismic wave amplitude?', choices:['Beaufort scale','Richter scale','Fujita scale','Saffir-Simpson scale'], answer:1},
-  {cat:'Earth & Space', diff:'medium', q:'What is the term for a rock fragment that survives its passage through the atmosphere and lands on Earth?', choices:['Meteoroid','Meteor','Meteorite','Asteroid'], answer:2},
-  {cat:'Earth & Space', diff:'medium', q:'Which process describes the continuous movement of water between the atmosphere, land, and oceans?', choices:['Carbon cycle','Nitrogen cycle','Water cycle','Rock cycle'], answer:2},
-  {cat:'Earth & Space', diff:'hard', q:'The Hertzsprung-Russell diagram plots stellar luminosity against what other stellar property?', choices:['Mass','Distance from Earth','Surface temperature or spectral class','Age'], answer:2},
-  {cat:'Earth & Space', diff:'hard', q:'Which type of plate boundary is primarily responsible for the formation of deep ocean trenches?', choices:['Divergent boundary','Convergent boundary with subduction','Transform boundary','Passive margin'], answer:1},
-  {cat:'Earth & Space', diff:'hard', q:'A star\'s eventual fate as a white dwarf, neutron star, or black hole is primarily determined by what property?', choices:['Its rotational speed','Its initial or remaining mass','Its surface temperature','Its distance from the galactic center'], answer:1},
-  {cat:'Earth & Space', diff:'hard', q:'The Milankovitch cycles describe long-term climate variation driven by changes in which combination of Earth\'s orbital parameters?', choices:['Eccentricity, axial tilt, and precession','Solar flare activity','Ocean current strength','Volcanic aerosol concentration'], answer:0},
-  {cat:'Earth & Space', diff:'hard', q:'Which seismic wave type cannot travel through liquid, providing key evidence for the liquid state of Earth\'s outer core?', choices:['P waves','S waves','Surface waves','Love waves'], answer:1},
-
-  {cat:'Energy', diff:'easy', q:'Which of the following is considered a renewable energy source?', choices:['Coal','Natural gas','Solar','Petroleum'], answer:2},
-  {cat:'Energy', diff:'easy', q:'What device converts sunlight directly into electricity?', choices:['Wind turbine','Photovoltaic cell','Generator','Transformer'], answer:1},
-  {cat:'Energy', diff:'easy', q:'What is the term for energy stored due to an object\'s position or configuration?', choices:['Kinetic energy','Potential energy','Thermal energy','Radiant energy'], answer:1},
-  {cat:'Energy', diff:'easy', q:'Which fossil fuel is formed primarily from ancient marine organisms and is a liquid at room temperature?', choices:['Coal','Natural gas','Petroleum','Peat'], answer:2},
-  {cat:'Energy', diff:'easy', q:'What is the primary greenhouse gas released from burning fossil fuels?', choices:['Oxygen','Nitrogen','Carbon dioxide','Hydrogen'], answer:2},
-  {cat:'Energy', diff:'medium', q:'In a nuclear power plant, energy is primarily released through what process?', choices:['Combustion','Nuclear fission','Nuclear fusion','Electrolysis'], answer:1},
-  {cat:'Energy', diff:'medium', q:'What is the unit used to measure electrical energy consumption, commonly seen on utility bills?', choices:['Watt','Kilowatt-hour','Joule','Ampere-hour'], answer:1},
-  {cat:'Energy', diff:'medium', q:'Geothermal energy primarily harnesses heat from what source?', choices:['The sun','The Earth\'s interior','Ocean currents','Wind patterns'], answer:1},
-  {cat:'Energy', diff:'medium', q:'What term describes the percentage of energy input that is converted into useful output?', choices:['Power','Efficiency','Voltage','Capacity'], answer:1},
-  {cat:'Energy', diff:'medium', q:'Hydroelectric power plants generate electricity by using the energy of what?', choices:['Falling or flowing water','Burning wood','Wind currents','Solar radiation'], answer:0},
-  {cat:'Energy', diff:'hard', q:'In a Carnot heat engine operating between a hot reservoir at 600 K and a cold reservoir at 300 K, what is the maximum theoretical efficiency?', choices:['25%','50%','75%','100%'], answer:1},
-  {cat:'Energy', diff:'hard', q:'Nuclear fission of uranium-235 releases energy primarily according to which principle?', choices:['Conservation of momentum','Mass-energy equivalence, E = mc squared','Conservation of charge','The photoelectric effect'], answer:1},
-  {cat:'Energy', diff:'hard', q:'In a combined-cycle natural gas power plant, waste heat from the gas turbine is used to do what, improving overall efficiency?', choices:['Preheat incoming fuel only','Generate steam to drive a secondary steam turbine','Cool the exhaust stack','Power onsite lighting directly'], answer:1},
-  {cat:'Energy', diff:'hard', q:'The theoretical maximum efficiency of a wind turbine, known as the Betz limit, is approximately what percentage?', choices:['39.6%','59.3%','78.1%','92.4%'], answer:1},
-  {cat:'Energy', diff:'hard', q:'In nuclear fusion reactions such as those that power the sun, energy is released primarily because of what relationship between reactants and products?', choices:['The products have greater total mass than the reactants','The products have less total mass than the reactants, with the difference converted to energy','The reaction absorbs energy from the surroundings','The number of nucleons increases'], answer:1},
-
-  {cat:'Math', diff:'easy', q:'What is the value of pi rounded to two decimal places?', choices:['3.41','3.14','3.16','3.12'], answer:1},
-  {cat:'Math', diff:'easy', q:'What is the term for a number that can only be divided evenly by 1 and itself?', choices:['Composite number','Prime number','Rational number','Integer'], answer:1},
-  {cat:'Math', diff:'easy', q:'What is the sum of the interior angles of a triangle?', choices:['90 degrees','180 degrees','270 degrees','360 degrees'], answer:1},
-  {cat:'Math', diff:'easy', q:'What is the slope-intercept form of a linear equation?', choices:['y = mx + b','ax + by = c','y squared = 4px','a squared + b squared = c squared'], answer:0},
-  {cat:'Math', diff:'easy', q:'In statistics, what measure represents the middle value of an ordered data set?', choices:['Mean','Mode','Median','Range'], answer:2},
-  {cat:'Math', diff:'medium', q:'What is 7 factorial (7!) equal to?', choices:['49','720','5040','127'], answer:2},
-  {cat:'Math', diff:'medium', q:'What is the term for the set of all possible input values of a function?', choices:['Range','Domain','Codomain','Interval'], answer:1},
-  {cat:'Math', diff:'medium', q:'What is the result of simplifying the square root of 144?', choices:['11','12','13','14'], answer:1},
-  {cat:'Math', diff:'medium', q:'What is the derivative of x squared with respect to x?', choices:['x','2x','x squared','2'], answer:1},
-  {cat:'Math', diff:'medium', q:'In a right triangle, the Pythagorean theorem relates the lengths of which sides?', choices:['All three sides only in equilateral triangles','The two legs and the hypotenuse','The base and height only','The perimeter and area'], answer:1},
-  {cat:'Math', diff:'hard', q:'What is the value of the definite integral of x squared from 0 to 3?', choices:['3','6','9','27'], answer:2},
-  {cat:'Math', diff:'hard', q:'For the function f(x) = x cubed minus 3x, at which x-value(s) does f have a local extremum?', choices:['x = 0 only','x = 1 and x = -1','x = 3 only','x = -3 and x = 3'], answer:1},
-  {cat:'Math', diff:'hard', q:'What is the sum of the infinite geometric series with first term 4 and common ratio 1/2?', choices:['4','6','8','Infinite, does not converge'], answer:2},
-  {cat:'Math', diff:'hard', q:'Using the law of cosines, if a triangle has sides a = 5, b = 7, and included angle C = 60 degrees, what is c squared?', choices:['39','44','49','74'], answer:0},
-  {cat:'Math', diff:'hard', q:'If z = 3 + 4i, what is the magnitude, or modulus, of z?', choices:['3','4','5','7'], answer:2}
-];
-
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-
-const ROUND_SIZE = 15;
-const TILTS = ['-0.6deg','0.5deg','-0.4deg','0.8deg'];
-
-let state = {
-  phase: 'device',
-  device: null,
-  selectedDiff: 'hard',
-  deck: [],
-  index: 0,
-  score: 0,
-  streak: 0,
-  bestStreak: 0,
-  results: [],
-  answered: false,
-  timeLimit: 8000,
-  raf: null
-};
-
-function pickDevice(d){
-  state.device = d;
-  state.phase = 'start';
-  render();
-}
-
-function pickDifficulty(d){
-  state.selectedDiff = d;
-  render();
-}
-
-function startGame(){
-  const diff = state.selectedDiff;
-  const pool = QUESTIONS.filter(q => q.diff === diff);
-  state = Object.assign(state, {
-    phase:'playing',
-    selectedDiff: diff,
-    deck: shuffle(pool).slice(0, ROUND_SIZE),
-    index: 0,
-    score: 0,
-    streak: 0,
-    bestStreak: 0,
-    results: [],
-    answered: false,
-    timeLimit: DIFFICULTIES[diff].time,
-    raf: null
-  });
-  render();
-  startTimer();
-}
-
-function startTimer(){
-  clearTimer();
-  state.timerStart = Date.now();
-  const track = document.getElementById('timer-fill');
-  const num = document.getElementById('timer-num');
-  function tick(){
-    const elapsed = Date.now() - state.timerStart;
-    const pct = Math.max(0, 100 - (elapsed/state.timeLimit)*100);
-    const secsLeft = Math.max(0, Math.ceil((state.timeLimit - elapsed)/1000));
-    if(track) track.style.width = pct + '%';
-    if(track) track.classList.toggle('low', pct < 25);
-    if(num) num.textContent = secsLeft + 's';
-    if(elapsed >= state.timeLimit && !state.answered){
-      submitAnswer(-1);
-      return;
-    }
-    if(!state.answered){
-      state.raf = requestAnimationFrame(tick);
-    }
-  }
-  state.raf = requestAnimationFrame(tick);
-}
-
-function clearTimer(){
-  if(state.raf) cancelAnimationFrame(state.raf);
-  state.raf = null;
-}
-
-function submitAnswer(choiceIdx){
-  if(state.answered) return;
-  state.answered = true;
-  clearTimer();
-  const q = state.deck[state.index];
-  const correct = choiceIdx === q.answer;
-  if(correct){
-    state.score += 4;
-    state.streak += 1;
-    state.bestStreak = Math.max(state.bestStreak, state.streak);
-  } else {
-    state.streak = 0;
-  }
-  state.results.push({cat:q.cat, correct, timedOut: choiceIdx === -1});
-  render(choiceIdx);
-}
-
-function nextQuestion(){
-  if(state.index + 1 >= state.deck.length){
-    state.phase = 'end';
-    render();
-    return;
-  }
-  state.index += 1;
-  state.answered = false;
-  render();
-  startTimer();
-}
-
-function goDevicePicker(){
-  state.phase = 'device';
-  render();
-}
-
-function render(selectedIdx){
-  const app = document.getElementById('app');
-  app.className = 'console' + (state.device ? ' device-' + state.device : '');
-
-  let inner = '';
-  if(state.phase === 'device'){
-    inner = renderDevice();
-  } else if(state.phase === 'start'){
-    inner = renderStart();
-  } else if(state.phase === 'end'){
-    inner = renderEnd();
-  } else {
-    inner = renderPlaying(selectedIdx);
-  }
-  app.innerHTML = `<div class="clip"></div><div class="paper-sheet"><div class="team-tag">STM Sci Bowl</div>${inner}</div>`;
-
-  if(state.phase === 'device'){
-    document.querySelectorAll('.device-card').forEach(el=>{
-      el.onclick = () => pickDevice(el.dataset.device);
-    });
-  } else if(state.phase === 'start'){
-    document.getElementById('start-btn').onclick = startGame;
-    document.querySelectorAll('.sticky').forEach(el=>{
-      el.onclick = () => pickDifficulty(el.dataset.diff);
-    });
-    const sw = document.getElementById('switch-device');
-    if(sw) sw.onclick = goDevicePicker;
-  } else if(state.phase === 'end'){
-    document.getElementById('restart-btn').onclick = () => { state.phase = 'start'; render(); };
-    const sw = document.getElementById('switch-device');
-    if(sw) sw.onclick = goDevicePicker;
-  } else {
-    if(!state.answered){
-      document.querySelectorAll('.choice-btn').forEach((btn,i)=>{
-        btn.onclick = () => submitAnswer(i);
-      });
-    } else {
-      const nb = document.getElementById('next-btn');
-      if(nb) nb.onclick = nextQuestion;
-    }
-  }
-}
-
-function renderDevice(){
-  return `
-    <div class="center">
-      <p class="eyebrow">STM Science Bowl &middot; Practice Sheet</p>
-      <p class="title-hand">What are you on?</p>
-      <p class="lede">Pick your device and the practice sheet will resize to fit it properly.</p>
-      <div class="device-pick">
-        <div class="device-card" data-device="phone" style="background:var(--math); transform:rotate(-2deg);">
-          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="var(--ink)" stroke-width="2"><rect x="9" y="3" width="12" height="24" rx="2"/><line x1="13" y1="24" x2="17" y2="24"/></svg>
-          Phone
-        </div>
-        <div class="device-card" data-device="tablet" style="background:var(--phys); transform:rotate(1.5deg);">
-          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="var(--ink)" stroke-width="2"><rect x="5" y="4" width="20" height="22" rx="2"/><line x1="13" y1="23" x2="17" y2="23"/></svg>
-          Tablet
-        </div>
-        <div class="device-card" data-device="desktop" style="background:var(--energy); transform:rotate(-1deg);">
-          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="var(--ink)" stroke-width="2"><rect x="3" y="5" width="24" height="16" rx="1.5"/><line x1="12" y1="25" x2="18" y2="25"/><line x1="15" y1="21" x2="15" y2="25"/></svg>
-          Computer
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderStart(){
-  const chips = Object.entries(CATEGORIES).map(([name,cls])=>
-    `<span class="legend-chip" style="background:var(--${cls})">${name}</span>`
-  ).join('');
-  const diffOpts = Object.entries(DIFFICULTIES).map(([key,d])=>{
-    const sel = key === state.selectedDiff ? ' selected' : '';
-    return `<div class="sticky${sel}" data-diff="${key}">
-      <div class="sticky-name">${d.label}</div>
-      <div class="sticky-desc">${d.desc}</div>
-    </div>`;
-  }).join('');
-  return `
-    <div class="center">
-      <p class="eyebrow">Made for the STM Science Bowl Team</p>
-      <p class="title-hand">Science Bowl<br>Practice</p>
-      <p class="lede">${ROUND_SIZE} toss-ups written in the style of a BPA Regional Science Bowl, covering Biology, Chemistry, Physics, Earth &amp; Space, Energy, and Math. Lock in an answer before the clock runs out — a correct call pays 4 points, and a miss resets your streak.</p>
-      <div class="diff-select">${diffOpts}</div>
-      <div class="cat-legend">${chips}</div>
-      <button class="buzz-btn" id="start-btn">BUZZ<br>IN</button>
-      <div><button class="link-btn" id="switch-device">wrong device? switch &#9656;</button></div>
-      <div><span class="signature-stamp">coded by Kelly Chaney</span></div>
-      <p class="fine-print">Built for the STM Science Bowl Team &middot; unofficial practice set, not affiliated with BPA</p>
-    </div>
-  `;
-}
-
-function renderPlaying(selectedIdx){
-  const q = state.deck[state.index];
-  const catClass = CATEGORIES[q.cat];
-  const diffInfo = DIFFICULTIES[state.selectedDiff];
-  const dots = state.deck.map((d,i)=>{
-    let cls = 'dot-lamp';
-    let mark = '';
-    if(i < state.index){
-      cls += state.results[i].correct ? ' answered-correct' : ' answered-wrong';
-      mark = state.results[i].correct ? '&#10003;' : '&#215;';
-    } else if(i === state.index){
-      cls += ' current';
-    }
-    return `<div class="${cls}">${mark}</div>`;
-  }).join('');
-
-  let choicesHtml = '';
-  q.choices.forEach((c,i)=>{
-    let cls = 'choice-btn';
-    let disabled = '';
-    if(state.answered){
-      disabled = 'disabled';
-      if(i === q.answer) cls += ' correct';
-      else if(i === selectedIdx) cls += ' wrong';
-      else cls += ' faded';
-    }
-    choicesHtml += `<button class="${cls}" style="--tilt:${TILTS[i%TILTS.length]}" ${disabled}><span class="choice-letter">${String.fromCharCode(65+i)}</span><span>${c}</span></button>`;
-  });
-
-  let feedback = '';
-  if(state.answered){
-    const r = state.results[state.index];
-    if(r.timedOut){
-      feedback = `<span class="feedback-msg timeout">time's up — answer was ${String.fromCharCode(65+q.answer)}</span>`;
-    } else if(r.correct){
-      feedback = `<span class="feedback-msg correct">correct, +4</span>`;
-    } else {
-      feedback = `<span class="feedback-msg wrong">miss — answer was ${String.fromCharCode(65+q.answer)}</span>`;
-    }
-  } else {
-    feedback = `<span></span>`;
-  }
-
-  const streakMark = state.streak <= 5
-    ? '&#10003;'.repeat(state.streak)
-    : '&#10003;&#10003;&#10003;&#10003;&#10003;+' + (state.streak - 5);
-
-  return `
-    <p class="eyebrow">STM Science Bowl &middot; BPA-style toss-up</p>
-    <div class="header">
-      <div>
-        <p class="title-hand" style="font-size:24px;">Q${String(state.index+1).padStart(2,'0')} / ${state.deck.length}</p>
-      </div>
-      <div class="score-stamp">
-        <span class="num">${state.score}</span>
-        <span class="lbl">score</span>
-      </div>
-    </div>
-    <div class="progress-dots">${dots}</div>
-    <div class="meta-row">
-      <span class="highlight-tag" style="background:var(--${catClass})">${q.cat}</span>
-      <span class="diff-tag">${diffInfo.label}</span>
-      <span class="streak-tag">${state.streak > 0 ? streakMark : 'streak: 0'}</span>
-    </div>
-    <div class="timer-shell">
-      <div class="timer-track"><div class="timer-fill" id="timer-fill"></div></div>
-      <span class="timer-num" id="timer-num">${Math.round(state.timeLimit/1000)}s</span>
-    </div>
-    <div class="question-box">
-      <p class="question-text">${q.q}</p>
-    </div>
-    <div class="choices">${choicesHtml}</div>
-    <div class="feedback-row">${feedback}<span></span></div>
-    ${state.answered ? `<button class="push-btn" id="next-btn">${state.index+1 >= state.deck.length ? 'see final score' : 'next toss-up'}</button>` : ''}
-  `;
-}
-
-function renderEnd(){
-  const total = state.deck.length;
-  const correctCount = state.results.filter(r=>r.correct).length;
-  const accuracy = Math.round((correctCount/total)*100);
-
-  const byCat = {};
-  state.results.forEach((r,i)=>{
-    const cat = state.deck[i].cat;
-    if(!byCat[cat]) byCat[cat] = {correct:0,total:0};
-    byCat[cat].total += 1;
-    if(r.correct) byCat[cat].correct += 1;
-  });
-
-  const rows = Object.entries(byCat).map(([cat,v])=>{
-    const cls = CATEGORIES[cat];
-    return `<div class="breakdown-row">
-      <span class="breakdown-cat"><span class="swatch" style="background:var(--${cls})"></span>${cat}</span>
-      <span>${v.correct} / ${v.total}</span>
-    </div>`;
-  }).join('');
-
-  return `
-    <div class="center">
-      <p class="eyebrow">Round Complete &middot; ${DIFFICULTIES[state.selectedDiff].label}</p>
-      <p class="title-hand" style="font-size:46px;">${state.score} pts</p>
-      <p class="lede">${correctCount} of ${total} correct at ${accuracy}% accuracy. Best streak: ${state.bestStreak}.</p>
-      <div class="end-stats">
-        <div class="tile"><div class="stat-num">${correctCount}</div><div class="stat-label">Correct</div></div>
-        <div class="tile"><div class="stat-num">${state.score}</div><div class="stat-label">Points</div></div>
-        <div class="tile"><div class="stat-num">${state.bestStreak}</div><div class="stat-label">Best streak</div></div>
-      </div>
-      <div class="breakdown">${rows}</div>
-      <button class="buzz-btn" id="restart-btn" style="font-size:13px;">NEW<br>ROUND</button>
-      <div><button class="link-btn" id="switch-device">wrong device? switch &#9656;</button></div>
-      <div><span class="signature-stamp">coded by Kelly Chaney</span></div>
-      <p class="fine-print">Built for the STM Science Bowl Team &middot; unofficial practice set</p>
-    </div>
-  `;
-}
-
-render();
-</script>
-</body>
-</html>
+:root{--bg:#141311;--s1:#1d1b18;--s2:#27241f;--tx:#f1ebdf;--mu:#9a9285;--ac:#f3c14b;--acx:#1a1405;--rd:#e5533d;--ln:#34302a;--sh:rgba(0,0,0,.5);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);color-scheme:dark}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4efe4;--s1:#fffaf0;--s2:#ebe4d4;--tx:#1d1a15;--mu:#716a5d;--ln:#d9d1bf;--sh:rgba(60,40,0,.18);color-scheme:light}}
+:root[data-theme="light"]{--bg:#f4efe4;--s1:#fffaf0;--s2:#ebe4d4;--tx:#1d1a15;--mu:#716a5d;--ln:#d9d1bf;--sh:rgba(60,40,0,.18);color-scheme:light}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--tx);font:15px/1.4 'Instrument Sans',system-ui,sans-serif}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+h1,h2,h3,.fr{font-family:Fraunces,Georgia,serif;font-weight:700;letter-spacing:-.01em}
+#app{max-width:480px;height:100%;margin:0 auto;position:relative;overflow:hidden;background:var(--bg)}
+.scr{position:absolute;inset:0;overflow-y:auto;padding:14px 16px calc(110px + env(safe-area-inset-bottom,0px))}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.logo{font:700 24px Fraunces,serif;display:flex;align-items:center;gap:8px}
+.logo i{width:14px;height:14px;border-radius:50%;background:var(--ac);box-shadow:0 0 0 4px var(--s2)}
+.ib{width:40px;height:40px;border-radius:12px;background:var(--s1);display:grid;place-items:center;position:relative;border:1px solid var(--ln)}
+.dot{position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--rd)}
+svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hero{border-radius:22px;padding:18px;background:var(--s1);border:1px solid var(--ln);position:relative;overflow:hidden}
+.hero .ph{position:absolute;inset:0;opacity:.35;background-size:cover}
+.hero>*{position:relative}
+.hero h2{font-size:26px;line-height:1.1;margin:6px 0 14px;max-width:16ch}
+.mu{color:var(--mu);font-size:13px}
+.btn{background:var(--ac);color:var(--acx);font-weight:600;padding:11px 18px;border-radius:12px;transition:transform .15s}
+.btn:active{transform:scale(.96)}.btn.g{background:var(--s2);color:var(--tx)}.btn[disabled]{opacity:.5}
+.row{display:flex;gap:10px;align-items:center}
+.sec{margin:26px 0 12px;display:flex;justify-content:space-between;align-items:baseline}
+.sec h3{font-size:19px}
+.hs{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px;scrollbar-width:none}
+.chip{flex:none;padding:8px 14px;border-radius:10px;background:var(--s1);border:1px solid var(--ln);color:var(--mu);font-weight:500;font-size:14px;transition:.15s}
+.chip.on{background:var(--tx);color:var(--bg);border-color:var(--tx)}
+.circ{flex:none;width:92px;text-align:center;font-size:12.5px}
+.circ b{display:block;width:92px;height:92px;border-radius:26px 26px 26px 8px;margin-bottom:6px;background-size:cover;border:2px solid var(--c)}
+.masonry{columns:2;column-gap:10px}
+.post{break-inside:avoid;margin-bottom:10px;position:relative;border-radius:16px;overflow:hidden;background:var(--s1)}
+.post img{display:block;width:100%}
+.post .cap{position:absolute;inset:auto 0 0;padding:34px 10px 9px;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font-size:12.5px}
+.post .cap b{font-weight:600;display:block}
+.like{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.45);color:#fff;border-radius:9px;padding:4px 8px;font-size:12px;backdrop-filter:blur(6px)}
+.like.on{color:var(--ac)}
+.vid{position:absolute;top:9px;left:9px;font-size:11px;background:rgba(0,0,0,.5);color:#fff;padding:3px 7px;border-radius:7px}
+.pc{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:14px 0;border-bottom:1px solid var(--ln)}
+.pc p{font:500 17px/1.25 Fraunces,serif}
+.tag{font-size:12px;color:var(--mu)}.tag.d{color:var(--ac)}
+.nav{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-around;align-items:flex-end;padding:8px 10px calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 35%);z-index:5}
+.nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--mu);padding:6px 10px;min-width:56px;transition:color .15s}
+.nav button.on{color:var(--tx)}.nav button.on svg{stroke:var(--ac)}
+.nav .cam{width:66px;height:66px;border-radius:50%;background:var(--ac);color:var(--acx);margin-bottom:6px;justify-content:center;box-shadow:0 0 0 6px var(--bg),0 8px 24px var(--sh);padding:0}
+.nav .cam svg{stroke:var(--acx)!important;width:26px;height:26px}
+.sheet{position:absolute;inset:0;z-index:9;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;animation:f .2s}
+.sheet>div{width:100%;max-height:82%;overflow:auto;background:var(--s1);border-radius:24px 24px 0 0;padding:18px 18px 30px;animation:u .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes f{from{opacity:0}}@keyframes u{from{transform:translateY(40px);opacity:0}}
+.nt{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--ln)}
+.nt .av{width:38px;height:38px;border-radius:12px}
+.av{border-radius:50%;background-size:cover;flex:none}
+.cm{position:absolute;inset:0;background:#000;z-index:8;color:#fff;display:flex;flex-direction:column}
+.cm .vf{flex:1;position:relative;margin:calc(8px + env(safe-area-inset-top,0px)) 8px 0;border-radius:26px;overflow:hidden;background:#201d19}
+.cm video,.cm .vf>img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.cm .pm{position:absolute;top:14px;left:14px;right:14px;background:rgba(0,0,0,.5);padding:10px 14px;border-radius:14px;font:500 16px Fraunces,serif;backdrop-filter:blur(8px)}
+.ctl{display:flex;justify-content:space-around;align-items:center;padding:18px 20px calc(22px + env(safe-area-inset-bottom,0px))}
+.sh{width:76px;height:76px;border-radius:50%;border:4px solid #fff;background:none;position:relative}
+.sh::after{content:"";position:absolute;inset:6px;border-radius:50%;background:#fff;transition:.15s}.sh:active::after{inset:12px}
+.cm .ib{background:#2a2622;border-color:#3a352f;color:#fff}
+.cm input.c{position:absolute;left:14px;right:14px;bottom:14px;background:rgba(0,0,0,.55);border:0;color:#fff;padding:13px;border-radius:14px;font:inherit}
+.err{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:30px;gap:12px;justify-items:center}
+.rev{position:absolute;inset:0;z-index:10;background:var(--bg);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;gap:20px;text-align:center}
+.pair{display:flex;gap:12px;perspective:800px}
+.pol{background:#f4efe4;padding:8px 8px 26px;width:150px;border-radius:4px;color:#222;font:12px Fraunces,serif;box-shadow:0 12px 28px var(--sh)}
+.pol img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.pol.fl{animation:fl .8s .5s backwards}.pol:first-child{transform:rotate(-4deg)}.pol:last-child{transform:rotate(3deg)}
+@keyframes fl{from{transform:rotateY(90deg)}}
+.big{font:700 72px/1 Fraunces,serif;color:var(--ac)}
+.tg{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:500;z-index:20;animation:u .25s;white-space:nowrap}
+.gc{display:flex;gap:14px;align-items:center;padding:14px;border-radius:18px;background:var(--s1);margin-bottom:10px;border-left:6px solid var(--c);width:100%;text-align:left}
+.gc .av{width:54px;height:54px;border-radius:16px 16px 16px 5px}
+.bd{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bd div{text-align:center;padding:12px 4px;border-radius:14px;background:var(--s1);font-size:12px;color:var(--mu)}
+.bd div.on{color:var(--tx);box-shadow:inset 0 0 0 1.5px var(--ac)}
+.bd b{display:block;font:700 24px Fraunces,serif}.bd .on b{color:var(--ac)}
+.scrap{display:flex;flex-wrap:wrap;gap:14px 10px;padding:8px 0}
+.scrap .pol{width:calc(50% - 6px)}.scrap .pol:nth-child(odd){transform:rotate(-2.5deg)}.scrap .pol:nth-child(even){transform:rotate(2deg) translateY(10px)}
+.skel{background:linear-gradient(90deg,var(--s1),var(--s2),var(--s1));background-size:200%;animation:sk 1.2s infinite;border-radius:16px;height:180px;margin-bottom:10px}
+@keyframes sk{to{background-position:-200% 0}}
+.empty{padding:30px 10px;text-align:center;color:var(--mu)}
+input.t{font-size:16px;width:100%;background:var(--s2);border:1px solid var(--ln);color:var(--tx);padding:12px;border-radius:12px;font:inherit}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body><div id="app"></div>
+<script src="config.js"></script>
+<script type="module">
+import * as A from './api.js';
+const $=s=>document.querySelector(s),app=$('#app');
+const IC={home:'<path d="M4 11l8-7 8 7v8a1 1 0 01-1 1h-4v-6H9v6H5a1 1 0 01-1-1z"/>',finds:'<circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/>',cam:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',groups:'<circle cx="9" cy="9" r="3"/><circle cx="17" cy="10" r="2.4"/><path d="M3 19c0-3 2.7-5 6-5s6 2 6 5M15 15c3 0 6 1 6 4"/>',me:'<circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-4 3-6 7-6s7 2 7 6"/>',bell:'<path d="M6 16V11a6 6 0 0112 0v5l1.5 2h-15zM10 21h4"/>',flip:'<path d="M4 9a8 8 0 0114-3l2 2M20 15a8 8 0 01-14 3l-2-2M20 4v4h-4M4 20v-4h4"/>',bolt:'<path d="M13 3L5 13h6l-1 8 8-10h-6z"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',heart:'<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 10c0 5.500-7 10-7 10z"/>'};
+const ic=n=>`<svg class="i" viewBox="0 0 24 24">${IC[n]}</svg>`;
+// Generated scenes stand in for photography (no remote images allowed on published pages)
+const PAL=[['#f6b26b','#c8553d','#3b2a35'],['#9ec9c1','#3f7c85','#1f3a4a'],['#f2d492','#d98a4e','#5b3a29'],['#b9a6d6','#6b5b95','#2a2640'],['#c6dba0','#6c9a5a','#2d4a38'],['#f4a7a0','#c5606b','#4a2638'],['#a7c4e8','#5a85b8','#26344f'],['#e8c9a0','#a9744f','#3a2a22']];
+function art(i,w=300,h=380){let p=PAL[i%8],r=n=>{let x=Math.sin(i*97+n*31)*1e4;return x-Math.floor(x)};
+let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${p[0]}"/><stop offset="1" stop-color="${p[1]}"/></linearGradient></defs><rect width="${w}" height="${h}" fill="url(#g)"/><circle cx="${w*(.2+r(1)*.6)}" cy="${h*(.25+r(2)*.2)}" r="${28+r(3)*26}" fill="#fff" opacity=".55"/>`;
+for(let k=0;k<3;k++){let y=h*(.5+k*.14),pts=`0,${h} 0,${y}`;for(let x=0;x<=w;x+=w/5)pts+=` ${x},${y-r(k*9+x)*h*.12}`;s+=`<polygon points="${pts} ${w},${h}" fill="${p[2]}" opacity="${.35+k*.3}"/>`}
+if(i%3==0)for(let k=0;k<5;k++)s+=`<rect x="${20+k*52}" y="${h*.62-r(k+5)*70}" width="34" height="${h}" fill="${p[2]}" opacity=".85"/>`;
+return'data:image/svg+xml,'+encodeURIComponent(s+'</svg>')}
+const F=[['Maya',1],['Theo',3],['Ines',5],['Sol',7]];
+const av=(i,s=40)=>`<span class="av" style="width:${s}px;height:${s}px;display:inline-block;background-image:url('${art(i+20,80,80)}')"></span>`;
+const CATS=['Selfies','Objects','Funny','Nature','Friends','Food','Places','Animals','Fashion','Random','Throwbacks','Challenges'];
+const P=[['Find something blue.','Objects','Easy',0,1],['Make the funniest face you can.','Selfies','Easy',1,1],['Photograph something older than you.','Throwbacks','Medium',0,1],['Show your current view.','Places','Easy',0,1],['Find something that reminds you of a friend.','Friends','Medium',0,1],['The weirdest thing nearby.','Random','Medium',0,1],['Your lunch, from directly above.','Food','Easy',0,1],['Something alive that isn’t a person.','Animals','Hard',0,1],['Today’s outfit, no mirror.','Fashion','Medium',1,1],['A leaf with a story.','Nature','Easy',0,1],['Recreate an old photo of yours.','Throwbacks','Hard',0,0],['Something that fits in your palm.','Challenges','Hard',0,1],['Your friend’s better angle.','Friends','Hard',1,1],['A joke, no people allowed.','Funny','Medium',0,1]];
+const G=[['Roommates','#e08a4b',3],['Lisbon trip','#5fa38f',6],['Climbing crew','#c9657a',2]];
+const MS=[3,7,14,30,50,100];
+const day=()=>new Date().toDateString();
+/* ===== API SEAM: swap load/save for fetch() calls to your server (auth, photo upload, group access rules) ===== */
+const API={load:()=>{try{return JSON.parse(localStorage.getItem('pinhole')||'{}')}catch(e){return{}}},
+save:s=>localStorage.setItem('pinhole',JSON.stringify(s,(k,v)=>k=='vid'?undefined:v))};
+const yest=()=>new Date(Date.now()-864e5).toDateString();
+let S={streak:11,done:'',last:yest(),prot:1,pon:1,shots:[],likes:{},mine:[],read:0,sent:[],mg:[],al:[],vote:'',bio:'Collects blue things. Bad at selfies.',ring:'#f3c14b'};
+Object.assign(S,API.load());
+const save=()=>{try{API.save(S)}catch(e){while(S.shots.length>4){S.shots.pop();try{API.save(S);break}catch(_){}}}};
+const todays=P[new Date().getDate()%P.length];
+G.push(...S.mg);
+{let g=Math.round((new Date(day())-new Date(S.last))/864e5);if(g>1){if(S.pon&&S.prot)S.prot--;else S.streak=0;S.last=yest();save()}}
+let vm=0,rec=null,chunks=[],gcol='#e08a4b',gnm='',tab='home',loading=true,fl={cat:'All',diff:'All',self:0,fresh:0},cam=null,stream=null,facing='environment',flash=0,grp=null;
+const NOTES=[['Maya','sent you a find: “Something that fits in your palm.”',1],['Roommates','Theo added 6 photos to Kitchen Wall',2],['Streak','Keep your 11-day streak with Theo: 4 hours left',3],['Ines','replied to your photo',5],['Sol','sent a friend request',7]];
+function toast(t){let e=document.createElement('div');e.className='tg';e.textContent=t;app.append(e);setTimeout(()=>e.remove(),2200)}
+function post(i,who,cap){let id='p'+i,on=S.likes[id];return`<div class="post"><img src="${art(i)}" alt="" style="aspect-ratio:${i%3?'3/4':'1/1'}">${i%5==0?'<span class="vid">0:07</span>':''}<button class="like ${on?'on':''}" data-a="like" data-i="${id}" aria-label="React">${ic('heart')}</button><div class="cap"><b>${who}</b>${cap}</div></div>`}
+function homeD(){if(loading)return`<div class="top"><div class="logo"><i></i>Pinhole</div></div><div class="skel" style="height:170px"></div><div class="skel"></div>`;
+return`<div class="top"><div class="logo"><i></i>Pinhole</div><button class="ib" data-a="notes" aria-label="Notifications">${ic('bell')}${S.read?'':'<span class="dot"></span>'}</button></div>
+<div class="hero"><div class="ph" style="background-image:url('${art(todays[0].length+2,400,300)}')"></div><div class="mu">Today’s find · you and Theo</div><h2>${todays[0]}</h2><div class="row">${S.done==day()?`<span class="mu">Done today · ${S.streak}-day streak</span>`:`<button class="btn" data-a="cam" data-p="${todays[0]}">Take it now</button><span class="mu">${S.streak}-day streak at stake</span>`}</div></div>
+<div class="sec"><h3>Circles</h3></div><div class="hs">${G.map((g,i)=>`<button class="circ" style="--c:${g[1]}" data-a="grp" data-i="${i}"><b style="background-image:url('${art(i+11,120,120)}')"></b>${g[0]}</button>`).join('')}</div>
+<div class="sec"><h3>From friends</h3><span class="mu">${F.length} new</span></div><div class="masonry">${S.shots.slice(0,2).map((s,i)=>`<div class="post"><img src="${s.img}" alt=""><div class="cap"><b>You</b>${s.cap||s.prompt||''}</div></div>`).join('')}${F.concat(F).map((f,i)=>post(i,f[0],['Found it','Golden hour','Not a selfie','Caught him'][i%4])).join('')}</div>`}
+function finds(){let l=P.concat(S.mine).filter(p=>(fl.cat=='All'||p[1]==fl.cat)&&(fl.diff=='All'||p[2]==fl.diff)&&(!fl.self||p[3])&&(!fl.fresh||p[4]));
+return`${DEMO}<div class="top"><h1 style="font-size:30px">Finds</h1></div>
+<div class="hs" style="margin-bottom:10px">${['All',...CATS].map(c=>`<button class="chip ${fl.cat==c?'on':''}" data-a="cat" data-v="${c}">${c}</button>`).join('')}</div>
+<div class="hs">${['All','Easy','Medium','Hard'].map(c=>`<button class="chip ${fl.diff==c?'on':''}" data-a="diff" data-v="${c}">${c}</button>`).join('')}<button class="chip ${fl.self?'on':''}" data-a="self">Selfie</button><button class="chip ${fl.fresh?'on':''}" data-a="fresh">New photo</button></div>
+<div style="margin-top:12px">${l.length?l.map(p=>{let d=S.shots.some(s=>s.prompt==p[0]);return`<div class="pc"><p>${p[0]}</p><button class="btn ${d?'g':''}" data-a="cam" data-p="${p[0]}">${d?'Redo':'Take'}</button><span class="tag"><span class="tag d">${p[2]}</span> · ${p[1]}${p[3]?' · selfie':''}${d?' · completed':''}</span><button class="tag" data-a="send" data-p="${p[0]}" style="text-align:right">Send to friend</button></div>`}).join(''):`<div class="empty"><h3>No finds match</h3><p style="margin:6px 0 14px">Loosen a filter or write your own.</p><button class="btn g" data-a="reset">Clear filters</button></div>`}</div>
+${battle()}<div class="sec"><h3>Write your own</h3></div><div class="row"><input class="t" id="np" placeholder="Find something that…"><button class="btn" data-a="mk">Add</button></div>`}
+function battle(){let me=S.shots.find(s=>s.prompt==todays[0]),v=S.vote;
+return`<div class="sec"><h3>Photo battle</h3><span class="mu">optional, friendly</span></div><div class="hero"><div class="mu">You vs Theo · ${todays[0]}</div>${me?`<div class="pair" style="margin:12px 0"><div class="pol"><img src="${me.img}" alt="">you</div><div class="pol"><img src="${art(todays[0].length)}" alt="">Theo</div></div>${v?`<p>${v=='me'?'You win 3–2':'Theo wins 3–2'} <span class="mu">(demo votes from friends)</span></p>`:`<div class="row"><button class="btn" data-a="vote" data-v="me">Mine wins</button><button class="btn g" data-a="vote" data-v="th">Theo’s wins</button></div>`}`:`<p style="margin:8px 0 12px">Take today’s find to unlock the battle.</p><button class="btn" data-a="cam" data-p="${todays[0]}">Take it now</button>`}</div>`}
+function groups(){if(grp!=null){let g=G[grp];return`<div class="top"><button class="ib" data-a="back" aria-label="Back">${ic('x')}</button><h2 style="color:${g[1]}">${g[0]}</h2><span></span></div><div class="mu" style="margin-bottom:12px">${g[2]+2} members · group streak ${g[2]*3} days</div><button class="btn" data-a="cam" data-p="Group find: something that looks like this group">Challenge ${g[0]}</button><div class="sec"><h3>Albums</h3></div><div class="row"><input class="t" id="an" placeholder="Birthday, trip, hangout…"><button class="btn" data-a="mal">Create</button></div>${S.al.map((a,i)=>a.g==grp?`<div class="pc"><p>${a.n}</p><button class="btn g" data-a="aal" data-i="${i}">Add latest</button><span class="tag">${a.im.length} photos</span></div>`:'').join('')}<div class="sec"><h3>Shared feed</h3></div><div class="masonry">${[0,1,2,3,4].map(i=>post(i+grp*3,F[i%4][0],'')).join('')}</div>`}
+return`${DEMO}<div class="top"><h1 style="font-size:30px">Groups</h1></div>${G.map((g,i)=>`<button class="gc" style="--c:${g[1]}" data-a="grp" data-i="${i}"><span class="av" style="background-image:url('${art(i+11,120,120)}')"></span><span><b>${g[0]}</b><br><span class="mu">${g[2]+2} members · ${g[2]*3}-day group streak</span></span></button>`).join('')}<div class="sec"><h3>New group</h3></div><input class="t" id="gn" maxlength="24" placeholder="Group name" value="${gnm}"><div class="row" style="margin:10px 0">${['#e08a4b','#5fa38f','#c9657a','#6b8fd6','#c9b04b'].map(c=>`<button data-a="gc" data-v="${c}" aria-label="Theme color" style="background:${c};width:34px;height:34px;border-radius:10px;${gcol==c?'outline:2px solid var(--tx);outline-offset:2px':''}"></button>`).join('')}<button class="btn" data-a="mg">Create</button></div>`}
+function meD(){return`<div class="top"><h1 style="font-size:30px">You</h1></div><div class="row" style="gap:16px"><span style="padding:3px;border-radius:50%;background:${S.ring};display:inline-block">${av(9,72)}</span><div><h2>@rowan.p</h2><button class="mu" data-a="bio" style="text-align:left">${S.bio} · edit</button></div></div>
+<div class="sec"><h3>Streak badges</h3><span class="mu">${S.streak} days</span></div><div class="bd">${MS.map(m=>`<div class="${S.streak>=m?'on':''}"><b>${m}</b>${S.streak>=m?'earned':'days'}</div>`).join('')}</div>
+<div class="sec"><h3>Memories</h3></div><div class="scrap"><div class="pol"><img src="${art(4)}" alt="">A year ago (demo)</div>${S.al.map(a=>`<div class="pol"><img src="${a.im[0]||art(a.n.length)}" alt="">${a.n} · ${a.im.length}</div>`).join('')}</div>${S.shots.length?`<div class="scrap">${S.shots.map(s=>`<div class="pol"><img src="${s.img}" alt="">${s.cap||s.prompt||'untitled'}</div>`).join('')}</div>`:`<div class="empty">Photos you take will pin here like a scrapbook.</div>`}
+<div class="sec"><h3>Friends</h3></div><div class="row">${F.map(f=>`<div style="text-align:center;font-size:12px">${av(f[1],52)}<br>${f[0]}</div>`).join('')}</div>
+<div class="sec"><h3>Appearance</h3></div><div class="row"><button class="chip" data-a="th" data-v="dark">Dark</button><button class="chip" data-a="th" data-v="light">Light</button></div><div class="row" style="margin-top:12px">${['#f3c14b','#e5533d','#5fa38f','#6b8fd6'].map(c=>`<button data-a="ring" data-v="${c}" aria-label="Profile ring color" style="width:30px;height:30px;border-radius:50%;background:${c};${S.ring==c?'outline:2px solid var(--tx);outline-offset:2px':''}"></button>`).join('')}</div><div class="row" style="margin-top:12px"><button class="chip ${S.pon?'on':''}" data-a="prot">Streak protection ${S.pon?'on':'off'} · ${S.prot} left</button><button class="chip" data-a="rem">Reminders</button></div>`}
+function nav(){return`<nav class="nav">${[['home','Home'],['finds','Finds'],['cam','Camera'],['groups','Groups'],['me','Profile']].map(t=>`<button class="${t[0]==tab?'on':''} ${t[0]=='cam'?'cam':''}" data-a="${t[0]=='cam'?'cam':'tab'}" data-v="${t[0]}" aria-label="${t[1]}">${ic(t[0])}${t[0]=='cam'?'':t[1]}</button>`).join('')}</nav>`}
+function camUI(){let c=cam;return`<div class="cm"><div class="vf">${c.img?(c.vid?`<video src="${c.vid}" autoplay loop muted playsinline controls></video>`:`<img src="${c.img}" alt="Preview">`):`<video id="v" autoplay playsinline muted></video><div class="err" id="er" hidden><h3>Camera isn’t available</h3><p class="mu">Allow camera access in your browser, or pick a photo from your device.</p><label class="btn">Choose photo<input type="file" accept="image/*" id="fi" hidden></label></div>`}${c.p?`<div class="pm">${c.p}</div>`:''}${c.img?'':`<button class="chip" data-a="mode" style="position:absolute;bottom:14px;left:14px;background:rgba(0,0,0,.55);color:#fff;border:0">${vm?'Video':'Photo'}</button>`}${c.img?`<input class="c" id="cap" maxlength="80" placeholder="Add a caption">`:''}</div>
+<div class="ctl">${c.img?`<button class="ib" data-a="retake" aria-label="Retake">${ic('flip')}</button><button class="btn" data-a="submit">${c.p?'Submit find':'Send to friends'}</button>`:`<button class="ib" data-a="flash" aria-label="Flash" style="${flash?'color:var(--ac)':''}">${ic('bolt')}</button><button class="sh" data-a="snap" aria-label="${vm?'Record video':'Take photo'}"></button><button class="ib" data-a="flip" aria-label="Switch camera">${ic('flip')}</button>`}</div><button class="ib" data-a="close" aria-label="Close" style="position:absolute;top:calc(22px + env(safe-area-inset-top,0px));right:22px;background:rgba(0,0,0,.5);color:#fff;border:0">${ic('x')}</button></div>`}
+const R={user:null,p:null,prompt:null,subs:[],urls:{},names:{},fr:[],sk:[],nt:[],mode:'in',q:[]};
+const DEMO='<p class="mu" style="margin-bottom:12px">Demo screen: not connected to your account yet.</p>';
+const NT={friend_request:'sent you a friend request',friend_accept:'accepted your friend request',streak_done:'posted today’s find',reaction:'reacted to your photo',group_invite:'added you to a group',friend_find:'sent you a find'};
+const home=()=>R.user?homeR():homeD(),me=()=>R.user?meR():meD();
+const other=s=>s.user_a==R.user.id?s.user_b:s.user_a;
+async function loadAll(){try{R.p=await A.auth.ensureProfile();R.user={id:R.p.id};R.prompt=await A.finds.today();
+ [R.subs,R.fr,R.sk,R.nt]=await Promise.all([A.finds.visible(R.prompt.id),A.social.friends(),A.finds.streaks(),A.notes.list()]);
+ let ids=[...new Set(R.fr.flatMap(f=>[f.requester,f.addressee]).concat(R.sk.flatMap(s=>[s.user_a,s.user_b])))].filter(i=>i!=R.user.id);
+ R.names={};if(ids.length)(await A.social.names(ids)).forEach(n=>R.names[n.id]=n.username);
+ for(const s of R.subs)if(!R.urls[s.photo_path])R.urls[s.photo_path]=await A.finds.url(s.photo_path)}catch(e){toast(e.message)}}
+async function boot(){if(await A.auth.session().catch(()=>null))await loadAll();loading=false;render()}
+function authUI(){let up=R.mode=='up';return`<div class="scr" style="display:grid;align-content:center;gap:12px"><div class="logo" style="font-size:34px"><i></i>Pinhole</div><p class="mu" style="margin-bottom:8px">${up?'Make an account to share finds with friends.':'Welcome back.'}</p>${up?'<input class="t" id="au" placeholder="Username" autocapitalize="none" autocorrect="off" maxlength="20">':''}<input class="t" id="ae" type="email" placeholder="Email" autocapitalize="none"><input class="t" id="ap" type="password" placeholder="Password, 8+ characters"><button class="btn" data-a="auth">${up?'Create account':'Sign in'}</button><button class="mu" data-a="amode">${up?'I already have an account':'New here? Create an account'}</button></div>`}
+function postR(s){let mine=s.user_id==R.user.id;return`<div class="post"><img src="${R.urls[s.photo_path]||''}" alt="">${mine?`<button class="vid" data-a="delsub" data-i="${s.id}">Delete</button>`:''}<button class="like" data-a="react" data-i="${s.id}" aria-label="React">${ic('heart')}</button><div class="cap"><b>${mine?'You':'@'+(s.profiles?.username||'friend')}</b>${s.caption||''}</div></div>`}
+function homeR(){let me=R.subs.some(s=>s.user_id==R.user.id),p=R.prompt,top=R.sk.map(s=>[R.names[other(s)]||'friend',s.current]).sort((a,b)=>b[1]-a[1])[0],nm=top&&MS.find(m=>m>top[1]);
+return`<div class="top"><div class="logo"><i></i>Pinhole</div><button class="ib" data-a="notes" aria-label="Notifications">${ic('bell')}${R.nt.some(n=>!n.read)?'<span class="dot"></span>':''}</button></div>
+<div class="hero"><div class="mu">Today’s find</div><h2>${p&&p.text||'No find today'}</h2><div class="row">${me?'<span class="mu">You posted today.</span>':p&&p.text?`<button class="btn" data-a="cam" data-p="${p.text}">Take it now</button>`:''}</div><p class="mu" style="margin-top:12px">${top?`${top[1]}-day streak with @${top[0]}${nm?', next badge at '+nm:''}`:'Add a friend in Profile to start a streak. You both post today’s find to grow it.'}</p></div>
+<div class="sec"><h3>Today’s finds</h3></div>${R.subs.length?`<div class="masonry">${R.subs.map(postR).join('')}</div>`:`<div class="empty">${me?'Waiting for friends. Their photos appear once they post too.':'Post today’s find to see what your friends posted.'}</div>`}`}
+function meR(){let acc=R.fr.filter(f=>f.status=='accepted'),inc=R.fr.filter(f=>f.status=='pending'&&f.addressee==R.user.id),out=R.fr.filter(f=>f.status=='pending'&&f.requester==R.user.id),best=Math.max(0,...R.sk.map(s=>s.best)),nm=id=>'@'+(R.names[id]||'friend'),o=f=>f.requester==R.user.id?f.addressee:f.requester;
+return`<div class="top"><h1 style="font-size:30px">You</h1></div><div class="row" style="gap:16px">${av(9,72)}<div><h2>@${R.p.username}</h2><div class="mu">${R.p.bio||'No bio yet'}</div></div></div>
+<div class="sec"><h3>Streak badges</h3><span class="mu">best ${best}</span></div><div class="bd">${MS.map(m=>`<div class="${best>=m?'on':''}"><b>${m}</b>${best>=m?'earned':'days'}</div>`).join('')}</div>
+<div class="sec"><h3>Friends</h3></div><div class="row"><input class="t" id="fq" placeholder="Find by username" autocapitalize="none"><button class="btn" data-a="fs">Search</button></div>
+${R.q.map(u=>`<div class="pc"><p>@${u.username}</p><button class="btn" data-a="fadd" data-i="${u.id}">Add</button></div>`).join('')}
+${inc.map(f=>`<div class="pc"><p>${nm(f.requester)} wants to be friends</p><span class="row"><button class="btn" data-a="facc" data-i="${f.requester}">Accept</button><button class="btn g" data-a="fdec" data-i="${f.requester}">Decline</button></span></div>`).join('')}
+${out.map(f=>`<div class="pc"><p>${nm(f.addressee)}</p><span class="tag">request sent</span></div>`).join('')}
+${acc.length?acc.map(f=>`<div class="pc"><p>${nm(o(f))}</p><button class="tag" data-a="blk" data-i="${o(f)}">Block</button></div>`).join(''):'<div class="empty">No friends yet. Search for a username above.</div>'}
+<div class="sec"><h3>Account</h3></div><div class="row"><button class="chip" data-a="th" data-v="dark">Dark</button><button class="chip" data-a="th" data-v="light">Light</button><button class="chip" data-a="out">Sign out</button></div><div class="row" style="margin-top:12px"><button class="chip" data-a="del" style="color:var(--rd)">Delete account</button></div>`}
+async function act(a,b){try{
+if(a=='amode'){R.mode=R.mode=='up'?'in':'up';render()}
+else if(a=='auth'){let e=$('#ae').value.trim(),p=$('#ap').value;if(R.mode=='up'){let u=$('#au').value.trim();if(!/^[a-zA-Z0-9_.]{3,20}$/.test(u))return toast('Username: 3 to 20 letters, numbers, . or _');if(p.length<8)return toast('Password needs 8+ characters');let d=await A.auth.signUp(e,p,u);if(!d.session){R.mode='in';render();return toast('Check your email to confirm, then sign in')}}else await A.auth.signIn(e,p);await loadAll();render()}
+else if(a=='out'){await A.auth.signOut();R.user=null;render()}
+else if(a=='del'){if(confirm('Delete your account and every photo? This cannot be undone.')){await A.auth.deleteAccount();R.user=null;render()}}
+else if(a=='fs'){let q=$('#fq').value.trim();if(q.length<2)return toast('Type at least 2 letters');R.q=await A.social.search(q);if(!R.q.length)toast('No one by that name');render()}
+else if(a=='fadd'){await A.social.request(b.dataset.i);toast('Request sent');R.q=[];await loadAll();render()}
+else if(a=='facc'||a=='fdec'){await A.social.respond(b.dataset.i,a=='facc');await loadAll();render()}
+else if(a=='blk'){if(confirm('Block this person? They won’t see you or your photos.')){await A.social.block(b.dataset.i);await loadAll();render()}}
+else if(a=='react'){await A.finds.react(+b.dataset.i);toast('Reacted')}
+else if(a=='delsub'){if(confirm('Delete this photo?')){await A.finds.remove(R.subs.find(s=>s.id==b.dataset.i));await loadAll();render()}}
+}catch(e){toast(e.message)}}
+async function submitR(){let c=cam,cp=($('#cap')||{}).value||'';if(c.p!=R.prompt.text)return toast('Only today’s find can be posted right now');
+let bt=document.querySelector('.ctl .btn');bt.disabled=true;bt.textContent='Uploading…';
+try{await A.finds.submit(await (await fetch(c.img)).blob(),R.prompt.id,cp)}catch(e){bt.disabled=false;bt.textContent='Submit find';return toast(e.message)}
+cam=null;stop();let before=R.sk.reduce((x,s)=>x+s.current,0);await loadAll();render();toast(R.sk.reduce((x,s)=>x+s.current,0)>before?'Posted. Your streak grew.':'Posted. Friends see it once they post too.')}
+function realNotes(){return`<h3 style="margin-bottom:6px">Activity</h3>${R.nt.length?R.nt.map(n=>`<div class="nt">${av(1,38)}<div><b>@${n.profiles?.username||'someone'}</b> <span class="mu">${NT[n.type]||''}</span></div></div>`).join(''):'<p class="mu">Nothing new.</p>'}`}
+function render(){if(A.configured&&!R.user){app.innerHTML=loading?'<div class="skel" style="margin:20px"></div>':authUI();return}let h={home,finds,groups,me}[tab]();app.innerHTML=`<div class="scr" id="sc">${h}</div>${nav()}${cam?camUI():''}`;if(cam&&!cam.img)startCam()}
+async function startCam(){stop();let v=$('#v');try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing},audio:false});v.srcObject=stream}catch(e){$('#er').hidden=false;v.hidden=true;let fi=$('#fi');fi&&(fi.onchange=e=>{let r=new FileReader();r.onload=()=>shrink(r.result);r.readAsDataURL(e.target.files[0])})}}
+const stop=()=>{stream&&stream.getTracks().forEach(t=>t.stop());stream=null};
+function shrink(src){let im=new Image();im.onload=()=>{let c=document.createElement('canvas'),w=(R.user?1080:420),h=im.height*w/im.width;c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);cam.img=c.toDataURL('image/jpeg',.8);stop();render()};im.src=src}
+function snap(){let v=$('#v');if(!v||!v.videoWidth)return toast('Camera isn’t ready yet');
+if(vm){if(rec){rec.stop();return}if(!window.MediaRecorder)return toast('Video isn’t supported here');chunks=[];rec=new MediaRecorder(stream);let c=document.createElement('canvas');c.width=(R.user?1080:420);c.height=v.videoHeight*(R.user?1080:420)/v.videoWidth;c.getContext('2d').drawImage(v,0,0,c.width,c.height);let poster=c.toDataURL('image/jpeg',.8);rec.ondataavailable=e=>chunks.push(e.data);rec.onstop=()=>{let u=URL.createObjectURL(new Blob(chunks,{type:rec.mimeType}));rec=null;cam.img=poster;cam.vid=u;stop();render()};rec.start();setTimeout(()=>rec&&rec.stop(),15000);$('.sh').style.borderColor='var(--rd)';toast('Recording, tap to stop');return}let c=document.createElement('canvas');c.width=(R.user?1080:420);c.height=v.videoHeight*(R.user?1080:420)/v.videoWidth;let x=c.getContext('2d');if(facing=='user'){x.translate((R.user?1080:420),0);x.scale(-1,1)}x.drawImage(v,0,0,c.width,c.height);if(flash){x.fillStyle='rgba(255,255,255,.12)';x.fillRect(0,0,c.width,c.height)}cam.img=c.toDataURL('image/jpeg',.8);stop();render()}
+function submit(){if(R.user)return submitR();let cp=($('#cap')||{}).value||'';S.shots.unshift({img:cam.img,vid:cam.vid,cap:cp,prompt:cam.p});let img=cam.img,isToday=cam.p==todays[0]&&S.done!=day();cam=null;stop();
+if(isToday){S.done=day();S.last=day();save();toast('Submitted. The streak grows once your friend submits too.');render()}else{save();toast(cam&&0||'Sent to friends');render()}}
+function reveal(img){render();let m=MS.includes(S.streak);let d=document.createElement('div');d.className='rev';d.innerHTML=`<div class="mu">Theo submitted too. Reveal.</div><div class="pair"><div class="pol fl"><img src="${img}" alt="">you</div><div class="pol fl"><img src="${art(todays[0].length)}" alt="">Theo</div></div><div><div class="big">${S.streak}</div><div class="fr" style="font-size:20px">${m?'New badge: '+S.streak+' days':'days in a row'}</div></div><button class="btn" id="ok">Keep going</button>`;app.append(d);$('#ok').onclick=()=>{d.remove();render()}}
+function sheet(h){let d=document.createElement('div');d.className='sheet';d.innerHTML=`<div>${h}</div>`;d.onclick=e=>{if(e.target==d)d.remove()};app.append(d);return d}
+app.addEventListener('click',e=>{let b=e.target.closest('[data-a]');if(!b)return;let a=b.dataset.a,v=b.dataset.v;
+if(a=='tab'){tab=v;grp=null;render()}else if(a=='cam'){cam={p:b.dataset.p||(R.prompt&&R.prompt.text)||''};render()}else if(a=='close'){cam=null;stop();render()}else if(a=='snap')snap();else if(a=='retake'){cam={p:cam.p};render()}else if(a=='submit')submit();
+else if(a=='flip'){facing=facing=='user'?'environment':'user';startCam()}else if(a=='flash'){flash=!flash;let t=stream&&stream.getVideoTracks()[0];try{t&&t.applyConstraints({advanced:[{torch:!!flash}]})}catch(_){}render()}
+else if(a=='like'){S.likes[b.dataset.i]=!S.likes[b.dataset.i];save();render()}else if(a=='cat'){fl.cat=v;render()}else if(a=='diff'){fl.diff=v;render()}else if(a=='self'){fl.self=!fl.self;render()}else if(a=='fresh'){fl.fresh=!fl.fresh;render()}else if(a=='reset'){fl={cat:'All',diff:'All',self:0,fresh:0};render()}
+else if(a=='mk'){let t=$('#np').value.trim();if(!t)return toast('Write the find first');S.mine.unshift([t,'Random','Medium',0,1]);save();render();toast('Find added')}
+else if(a=='send'){let p=b.dataset.p;let s=sheet(`<h3 style="margin-bottom:10px">Send to…</h3>${F.map(f=>`<button class="nt" style="width:100%;align-items:center" data-f="${f[0]}">${av(f[1])}<b>${f[0]}</b></button>`).join('')}`);s.onclick=ev=>{let f=ev.target.closest('[data-f]');if(f){S.sent.push([p,f.dataset.f]);save();s.remove();toast('Sent to '+f.dataset.f)}else if(ev.target==s)s.remove()}}
+else if(a=='grp'){grp=+b.dataset.i;tab='groups';render()}else if(a=='back'){grp=null;render()}
+else if(a=='notes'&&R.user){A.notes.readAll();R.nt.forEach(n=>n.read=true);render();sheet(realNotes())}else if(a=='notes'){S.read=1;save();render();sheet(`<h3 style="margin-bottom:6px">Activity</h3>${NOTES.map(n=>`<div class="nt">${av(n[2],38)}<div><b>${n[0]}</b> <span class="mu">${n[1]}</span></div></div>`).join('')}`)}
+else if(a=='th'){document.documentElement.dataset.theme=v}
+else if(a=='mode'){vm=!vm;render()}else if(a=='vote'){S.vote=v;save();render()}else if(a=='ring'){S.ring=v;save();render()}else if(a=='prot'){S.pon=!S.pon;save();render()}
+else if(a=='bio'){let x=prompt('Your bio',S.bio);if(x!=null){S.bio=x.slice(0,80);save();render()}}
+else if(a=='rem'){if(!window.Notification)return toast('Notifications aren’t supported here');Notification.requestPermission().then(r=>toast(r=='granted'?'Reminders on':'Permission denied'))}
+else if(a=='gc'){gnm=$('#gn').value;gcol=v;render()}
+else if(a=='mg'){let n=$('#gn').value.trim();if(!n)return toast('Name the group first');let g=[n,gcol,0];S.mg.push(g);G.push(g);gnm='';save();render();toast('Group created')}
+else if(a=='mal'){let n=$('#an').value.trim();if(!n)return toast('Name the album first');S.al.push({n,im:[],g:grp});save();render()}
+else if(a=='aal'){let s=S.shots[0],al=S.al[+b.dataset.i];if(!s)return toast('Take a photo first');al.im.push(s.img);save();render();toast('Added to '+al.n)}else act(a,b)});
+A.configured?boot():(setTimeout(()=>{loading=false;render()},650),render());
+</script></body></html>
